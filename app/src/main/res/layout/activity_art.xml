@@ -7,10 +7,11 @@
     tools:context=".ArtActivity">
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/selectImage"
         android:layout_width="275dp"
         android:layout_height="206dp"
         android:layout_marginTop="30dp"
+        android:onClick="selectImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -18,44 +19,52 @@
 
     <EditText
         android:id="@+id/conceptText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="75dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="1dp"
         android:ems="10"
         android:hint="Event Concept"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="322dp" />
+        app:layout_constraintTop_toBottomOf="@+id/eventName" />
 
     <EditText
         android:id="@+id/eventName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_width="300dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="30dp"
         android:ems="10"
-        android:hint="Event Concept"
+        android:hint="Event Name"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/selectImage" />
 
     <EditText
         android:id="@+id/dateText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="25dp"
         android:ems="10"
         android:hint="Event Date"
         android:inputType="textPersonName"
-        tools:layout_editor_absoluteX="85dp"
-        tools:layout_editor_absoluteY="417dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/conceptText" />
 
     <Button
         android:id="@+id/saveButton"
         android:layout_width="125dp"
         android:layout_height="49dp"
+        android:layout_marginTop="25dp"
+        android:onClick="saveButtonClicked"
         android:text="Save"
-        tools:layout_editor_absoluteX="143dp"
-        tools:layout_editor_absoluteY="492dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateText" />
 </androidx.constraintlayout.widget.ConstraintLayout>
