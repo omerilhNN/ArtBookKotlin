@@ -39,12 +39,11 @@ class ArtActivity : AppCompatActivity() {
 
     fun selectImage(view: View) {/*Reaching users gallery is at 'Dangerous' protection level so check twice with manifest and
            if block down below. If it was Internet permission just add it to the Manifest.*/
-        if (ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-            != PackageManager.PERMISSION_GRANTED
-        ) //If permission is denied to the GALLERY
+        
+        //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) use -> READ_MEDIA_IMAGES instead of EXTERNAL_STORAGE
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) //If permission is denied to the GALLERY
         {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this,
