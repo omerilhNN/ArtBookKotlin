@@ -34,7 +34,34 @@ class ArtActivity : AppCompatActivity() {
     }
 
     fun saveButtonClicked(view: View) {
+        val eventName =  binding.eventName.text.toString()
+        val conceptName = binding.conceptText.text.toString()
+        val dateText = binding.dateText.text.toString()
+        
+        if(selectedBitmap != null)
+        {
+            val smallBitmap = makeSmallerBitmap(selectedBitmap!!,300 )
+        }
+    }
+    private fun makeSmallerBitmap(image:Bitmap, maximumSize:Int) : Bitmap{
+        var width = image.width
+        var height = image.height
 
+        val bitmapRatio : Double = width.toDouble() / height.toDouble()
+        if(bitmapRatio > 1 )
+        {//Landscape
+            width = maximumSize
+            val scaledHeight = width / bitmapRatio
+            height = scaledHeight.toInt()
+        }else{
+            //portrait
+            height = maximumSize
+            val scaledWidth = height * bitmapRatio
+            width = scaledWidth.toInt()
+        }
+
+
+        return Bitmap.createScaledBitmap(image,width,height,true )
     }
 
     fun selectImage(view: View) {/*Reaching users gallery is at 'Dangerous' protection level so check twice with manifest and
@@ -53,11 +80,11 @@ class ArtActivity : AppCompatActivity() {
                 Snackbar.make(view, "Permission needed for gallery", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Give Permission", View.OnClickListener {
                         //Request permission
-
+                        permissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                     }).show()
 
             } else {//request permission without pop up
-                activityResultLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                permissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         } else {
             val intentToGallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)//Take pic from Media
