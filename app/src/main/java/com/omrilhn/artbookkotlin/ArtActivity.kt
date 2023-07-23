@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.omrilhn.artbookkotlin.databinding.ActivityArtBinding
+import java.io.ByteArrayOutputStream
 
 class ArtActivity : AppCompatActivity() {
 
@@ -37,13 +38,40 @@ class ArtActivity : AppCompatActivity() {
         val eventName =  binding.eventName.text.toString()
         val conceptName = binding.conceptText.text.toString()
         val dateText = binding.dateText.text.toString()
-        
+
         if(selectedBitmap != null)
         {
             val smallBitmap = makeSmallerBitmap(selectedBitmap!!,300 )
+
+            //in order to convert image to data
+            val outputStream = ByteArrayOutputStream()
+            smallBitmap.compress(Bitmap.CompressFormat.PNG,50,outputStream)
+            val byteArray = outputStream.toByteArray()
+            try{
+                val database = this.openOrCreateDatabase("Events", MODE_PRIVATE,null)
+                database.execSQL("CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, eventname VARCHAR, conceptname VARCHAR, datetext VARCHAR, image BLOB)")
+
+                val sqlString = "INSERT INTO events (eventName,eventConcept,date,image) VALUES(?,?,?,?)"
+                val statement = database.compileStatement(sqlString)
+                statement.bindString(1,eventName)
+                statement.bindString(2,conceptName)
+                statement.bindString(3,dateText)
+                statement.bindBlob(4,byteArray)
+
+                statement.execute()
+
+            }catch (e: Exception)
+            {
+                e.printStackTrace()
+            }
+            //Close whatever activity was opened before and return to the MAIN ACTIVITY
+            val intent = Intent(this@ArtActivity,MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
         }
     }
     private fun makeSmallerBitmap(image:Bitmap, maximumSize:Int) : Bitmap{
+        //Scale img size without corruption
         var width = image.width
         var height = image.height
 
