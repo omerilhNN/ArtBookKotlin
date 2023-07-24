@@ -5,15 +5,47 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.omrilhn.artbookkotlin.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
+    private lateinit var eventList : ArrayList<Event>
+    private lateinit var eventAdapter: EventAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        eventList = ArrayList<Event>()
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = eventAdapter
+
+
+        try{
+            val database = this.openOrCreateDatabase("Events", MODE_PRIVATE,null)
+            val cursor = database.rawQuery("SELECT * FROM events",null)
+            val eventNameIx = cursor.getColumnIndex("eventname")
+            val idIx = cursor.getColumnIndex("id")
+
+            while(cursor.moveToNext())
+            {
+                val name = cursor.getString(eventNameIx)
+                val id = cursor.getInt(idIx)
+
+                val event = Event(name,id)
+                eventList.add(event)
+            }
+            eventAdapter.notifyDataSetChanged()//when data set has been changed update it
+
+            cursor.close()
+        }
+        catch (e: Exception)
+        {
+            e.printStackTrace()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -26,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
        if(item.itemId == R.id.add_art_item ) {
            val intent = Intent(this@MainActivity,ArtActivity::class.java)
+           intent.putExtra("info","new")
            startActivity(intent)
        }
         return super.onOptionsItemSelected(item)

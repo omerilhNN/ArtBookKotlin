@@ -2,7 +2,9 @@ package com.omrilhn.artbookkotlin
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +26,7 @@ class ArtActivity : AppCompatActivity() {
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>//Start activity for a certain result
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     var selectedBitmap : Bitmap? = null
+    private lateinit var database : SQLiteDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +34,44 @@ class ArtActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        database = this.openOrCreateDatabase("Events", MODE_PRIVATE,null)
+
         registerLauncher()
+
+        val intent = intent
+        val info = intent.getStringExtra("info")
+
+        if(info.equals("new"))
+        {
+            binding.eventName.setText("")
+            binding.conceptText.setText("")
+            binding.dateText.setText("")
+            binding.saveButton.visibility = View.VISIBLE
+            binding.selectImage.setImageResource(R.drawable.eventify)
+        }else{//Old Image showment
+            binding.saveButton.visibility = View.INVISIBLE
+            val selectedId = intent.getIntExtra("id",1)
+
+            val cursor = database.rawQuery("SELECT * FROM events WHERE id = ?", arrayOf(selectedId.toString()))//Argument must be Array type
+
+            val eventNameIx = cursor.getColumnIndex("eventname")
+            val conceptNameIx = cursor.getColumnIndex("conceptname")
+            val dateIx = cursor.getColumnIndex("datetext")
+            val imageIx = cursor.getColumnIndex("image")
+
+            while(cursor.moveToNext())
+            {
+                binding.eventName.setText(cursor.getString(eventNameIx))
+                binding.conceptText.setText(cursor.getString(conceptNameIx))
+                binding.dateText.setText(cursor.getString(dateIx))
+
+                val byteArray = cursor.getBlob(imageIx)//getBlob is type of byteArray so we need to convert it to the byteArray
+                val bitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)//decode it in order to get real image
+                binding.selectImage.setImageBitmap(bitmap)
+            }
+            cursor.close()
+        }
+
     }
 
     fun saveButtonClicked(view: View) {
@@ -48,7 +88,7 @@ class ArtActivity : AppCompatActivity() {
             smallBitmap.compress(Bitmap.CompressFormat.PNG,50,outputStream)
             val byteArray = outputStream.toByteArray()
             try{
-                val database = this.openOrCreateDatabase("Events", MODE_PRIVATE,null)
+                //val database = this.openOrCreateDatabase("Events", MODE_PRIVATE,null)
                 database.execSQL("CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, eventname VARCHAR, conceptname VARCHAR, datetext VARCHAR, image BLOB)")
 
                 val sqlString = "INSERT INTO events (eventName,eventConcept,date,image) VALUES(?,?,?,?)"
